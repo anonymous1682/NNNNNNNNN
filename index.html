@@ -84,17 +84,17 @@
 
 <script type="" text/javascript>
   window.onload = function () {
-    let scenes = ["Clean", "Noisy"]
+    // let scenes = ["Clean", "Noisy"]
     let speakers = ["db_1", "M2VoC_male", "SSB1956", "SSB0273"]
     //let speakers = ["db_1", "M2VoC_male"]
     //let genders = ["female", "male"]
-    let genders = ["female", "male", "aishell female", "aishell male"]
-    let models = ["Bottomline", "Baseline", "Topline", "DualVC-nonstreaming", "DualVC-streaming"]
+    let genders = ["female-CN", "male-TH"]
+    let models = ["M3", "SCLN-GST", "PROPOSED", "PROPOSED-NPC", "PROPOSED-Deep emo"]
     let all_samples = [["1.wav", "4.wav", "biaobei_8315010.wav", "TenXiaozhi_007_000472.wav"], 
                     ["Y0000019527_oMwYDEEBw0g_S00489.wav", "Y0000019576_oVD68qz-Rrw_S00095.wav", "Y0000019686_omXo90yMpGc_S00895.wav", "Y0000019687_omf0WUsolCc_S00328.wav"]]
     let sample_data = `
         <tr>
-          <td style="text-align: center; width: 150px;" rowspan=2><strong>Scenario<strong></td>
+          // <td style="text-align: center; width: 150px;" rowspan=2><strong>Scenario<strong></td>
           <td style="text-align: center; width: 150px;" rowspan=2><strong>Target Speaker<strong></td>
           <td style="text-align: center; width: 150px;" rowspan=2><strong>Source speech<strong></td>
           <td style="text-align: center; width: 150px;" colspan=5><strong>Method<strong></td>
@@ -111,38 +111,38 @@
     sample_data += "</tr>"
     console.log(sample_data)
     
-    for (let x in scenes) {
-      let scene = scenes[x]
-      let scene_data = ""
-      scene_data += '<tr>'
-      scene_data += '<td style="text-align: center; width: 150px;" rowspan=' + 16 + '><strong>' + scene + ' Source' + '<strong></td>'
-      let samples = all_samples[x]
-      console.log(scene, samples)
-      for (let y in speakers) {
-        speaker = speakers[y]
-        gender = genders[y]
-        scene_data += '<td style="text-align: center; width: 150px;" rowspan=4>' + gender + '<audio style="width: 150px;"controls="" src="raw/samples/speakers/' + speaker + '.wav"></td>'
-        for (let z in samples) {
-          if (z != 0) {
-            scene_data += '<tr>'
-          }
-          let sample = samples[z]
-          scene_data += '<td style="text-align: center"><audio style="width: 150px;" controls="" src="raw/samples/' + scene + '/source/' + sample + '"></audio></td>'
-          for (let w in models) {
-            let model = models[w]
-            console.log(speaker + model)
-            if ((speaker == "SSB1956" || speaker == "SSB0273") && (model != "DualVC-streaming" && model != "DualVC-nonstreaming")) {
-              console.log("!!!")
-              scene_data += '<td style="text-align: center"><p>N/A</p></td>'
-            } else {
-              scene_data += '<td style="text-align: center"><audio style="width: 150px;" controls="" src="raw/samples/' + scene + '/' + model + '/' + speaker + '/' + sample + '"></audio></td>'
-            }
-          }
-          scene_data += '</tr>'
+    // for (let x in scenes) {
+    //   let scene = scenes[x]
+    //   let scene_data = ""
+    //   scene_data += '<tr>'
+    //   scene_data += '<td style="text-align: center; width: 150px;" rowspan=' + 16 + '><strong>' + scene + ' Source' + '<strong></td>'
+    //   let samples = all_samples[x]
+    //   console.log(scene, samples)
+    for (let y in speakers) {
+      speaker = speakers[y]
+      gender = genders[y]
+      scene_data += '<td style="text-align: center; width: 150px;" rowspan=4>' + gender + '<audio style="width: 150px;"controls="" src="raw/samples/speakers/' + speaker + '.wav"></td>'
+      for (let z in samples) {
+        if (z != 0) {
+          scene_data += '<tr>'
         }
+        let sample = samples[z]
+        scene_data += '<td style="text-align: center"><audio style="width: 150px;" controls="" src="raw/samples/' + scene + '/source/' + sample + '"></audio></td>'
+        for (let w in models) {
+          let model = models[w]
+          console.log(speaker + model)
+          if ((speaker == "SSB1956" || speaker == "SSB0273") && (model != "DualVC-streaming" && model != "DualVC-nonstreaming")) {
+            console.log("!!!")
+            scene_data += '<td style="text-align: center"><p>N/A</p></td>'
+          } else {
+            scene_data += '<td style="text-align: center"><audio style="width: 150px;" controls="" src="raw/samples/' + scene + '/' + model + '/' + speaker + '/' + sample + '"></audio></td>'
+          }
+        }
+        scene_data += '</tr>'
       }
-      sample_data += scene_data
     }
+    sample_data += scene_data
+    
     document.getElementById('tbody').innerHTML = sample_data
   }
 </script>
