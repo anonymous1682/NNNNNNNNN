@@ -85,7 +85,7 @@
 <script type="" text/javascript>
   window.onload = function () {
     let scenes = ["Clean", "Noisy"]
-    let speakers = ["db_1", "M2VoC_male", "SSB1956", "SSB0273"]
+    let speakers = ["fe-CN", "ma-TH"]
     let genders = ["female", "male", "aishell female", "aishell male"]
     let models = ["Bottomline", "Baseline", "Topline", "DualVC-nonstreaming", "DualVC-streaming"]
     let all_samples = [["1.wav", "4.wav", "biaobei_8315010.wav", "TenXiaozhi_007_000472.wav"], 
@@ -113,7 +113,7 @@
       let scene = scenes[x]
       let scene_data = ""
       scene_data += '<tr>'
-      scene_data += '<td style="text-align: center; width: 150px;" rowspan=' + 16 + '><strong>' + scene + ' Source' + '<strong></td>'
+      scene_data += '<td style="text-align: center; width: 150px;" rowspan=' + 8 + '><strong>' + scene + ' Source' + '<strong></td>'
       let samples = all_samples[x]
       console.log(scene, samples)
       for (let y in speakers) {
