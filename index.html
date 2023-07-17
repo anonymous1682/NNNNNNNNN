@@ -84,7 +84,7 @@
 
 <script type="" text/javascript>
   window.onload = function () {
-    let scenes = ["Clean", "Noisy"]
+    let scenes = ["0000"]
     let speakers = ["db_1", "M2VoC_male", "SSB1956", "SSB0273"]
     let speakers = ["db_1", "M2VoC_male"]
     let genders = ["female", "male"]
@@ -94,7 +94,6 @@
                     ["Y0000019527_oMwYDEEBw0g_S00489.wav", "Y0000019576_oVD68qz-Rrw_S00095.wav", "Y0000019686_omXo90yMpGc_S00895.wav", "Y0000019687_omf0WUsolCc_S00328.wav"]]
     let sample_data = `
         <tr>
-          <td style="text-align: center; width: 150px;" rowspan=2><strong>Scenario<strong></td>
           <td style="text-align: center; width: 150px;" rowspan=2><strong>Target Speaker<strong></td>
           <td style="text-align: center; width: 150px;" rowspan=2><strong>Source speech<strong></td>
           <td style="text-align: center; width: 150px;" colspan=5><strong>Method<strong></td>
@@ -115,7 +114,7 @@
       let scene = scenes[x]
       let scene_data = ""
       scene_data += '<tr>'
-      scene_data += '<td style="text-align: center; width: 150px;" rowspan=' + 16 + '><strong>' + scene + ' Source' + '<strong></td>'
+      // scene_data += '<td style="text-align: center; width: 150px;" rowspan=' + 16 + '><strong>' + scene + ' Source' + '<strong></td>'
       let samples = all_samples[x]
       console.log(scene, samples)
       for (let y in speakers) {
