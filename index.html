@@ -118,6 +118,11 @@
     //   scene_data += '<td style="text-align: center; width: 150px;" rowspan=' + 16 + '><strong>' + scene + ' Source' + '<strong></td>'
     //   let samples = all_samples[x]
     //   console.log(scene, samples)
+    
+    let scene_data = ""
+    scene_data += '<tr>'
+    let samples = all_samples[x]
+    // console.log(scene, samples)
     for (let y in speakers) {
       speaker = speakers[y]
       gender = genders[y]
@@ -127,7 +132,7 @@
           scene_data += '<tr>'
         }
         let sample = samples[z]
-        scene_data += '<td style="text-align: center"><audio style="width: 150px;" controls="" src="raw/samples/' + scene + '/source/' + sample + '"></audio></td>'
+        scene_data += '<td style="text-align: center"><audio style="width: 150px;" controls="" src="raw/samples/source/' + sample + '"></audio></td>'
         for (let w in models) {
           let model = models[w]
           console.log(speaker + model)
@@ -135,7 +140,7 @@
             console.log("!!!")
             scene_data += '<td style="text-align: center"><p>N/A</p></td>'
           } else {
-            scene_data += '<td style="text-align: center"><audio style="width: 150px;" controls="" src="raw/samples/' + scene + '/' + model + '/' + speaker + '/' + sample + '"></audio></td>'
+            scene_data += '<td style="text-align: center"><audio style="width: 150px;" controls="" src="raw/samples/' + model + '/' + speaker + '/' + sample + '"></audio></td>'
           }
         }
         scene_data += '</tr>'
