@@ -84,16 +84,16 @@
 
 <script type="" text/javascript>
   window.onload = function () {
-    let scenes = ["0000"]
+    let scenes = ["0000", "21"]
     let speakers = ["db_1", "M2VoC_male", "SSB1956", "SSB0273"]
     let speakers = ["db_1", "M2VoC_male"]
     let genders = ["female", "male"]
     let genders = ["female", "male", "aishell female", "aishell male"]
     let models = ["Bottomline", "Baseline", "Topline", "DualVC-nonstreaming", "DualVC-streaming"]
-    let all_samples = [["1.wav", "4.wav", "biaobei_8315010.wav", "TenXiaozhi_007_000472.wav"]]
+    let all_samples = [["1.wav", "4.wav", "biaobei_8315010.wav", "TenXiaozhi_007_000472.wav"],["1.wav", "4.wav", "biaobei_8315010.wav", "TenXiaozhi_007_000472.wav"]]
     let sample_data = `
         <tr>
-          <td style="text-align: center; width: 150px;" rowspan=1><strong>Scenario<strong></td>
+          <td style="text-align: center; width: 150px;" rowspan=2><strong>Scenario<strong></td>
           <td style="text-align: center; width: 150px;" rowspan=2><strong>Target Speaker<strong></td>
           <td style="text-align: center; width: 150px;" rowspan=2><strong>Source speech<strong></td>
           <td style="text-align: center; width: 150px;" colspan=5><strong>Method<strong></td>
@@ -102,9 +102,6 @@
         `
     for (const id in models) {
       model = models[id]
-      if (model == 'Baseline') {
-        model = 'IBF-VC'
-      }
       sample_data += '<td style="text-align: center; width: 150px;" rowspan=1><strong>' + model + '<strong></td>'
     }
     sample_data += "</tr>"
