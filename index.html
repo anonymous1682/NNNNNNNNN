@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+  <title>METTS: Multilingual Emotional Text-to-Speech by Cross-speaker and Cross-lingual Emotion Transfer</title>
+  <meta name="generator" content="Jekyll v3.9.0">
+  <meta property="og:title" content="TODO: title">
+  <meta property="og:locale" content="en_US">
+
+  <meta name="twitter:card" content="summary">
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#157878">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1001.0" data-gr-ext-installed="">
+  <section class="page-header">
+
+
+
+  </section>
+
+  <section class="main-content">
+    <h1 id="">
+      <center>METTS: Multilingual Emotional Text-to-Speech by Cross-speaker and Cross-lingual Emotion Transfer</center>
+    </h1>
+
+
+    <h2>0. Contents</h2>
+    <ol>
+      <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#transfer">Examples of target speaker</a></li>
+      <li><a href="#prediction">Synthetic speech of benchmark systems</a></li>
+      <li><a href="#control">Synthetic speech of ablation studies</a></li>
+      <li><a href="#control2">Synthetic speech of different numbers of quantization centers</a></li>
+    </ol>
+
+    <br><br>
+    <h2 id="abstract">1. Abstract<a name="abstract"></a></h2>
+    <p> Previous multilingual text-to-speech (TTS) approaches have considered leveraging monolingual speaker data to
+      enable cross-lingual speech synthesis for monolingual speakers. However, such data-efficient approaches have
+      ignored synthesizing emotional aspects of speech due to the challenges of cross-speaker cross-lingual emotion
+      transfer -- the heavy entanglement of speaker timbre, emotion and language factors in the speech signal will make
+      a system to produce cross-lingual synthetic speech with unwanted foreign accent and weak emotion expressiveness.
+      This paper proposes Multilingual Emotional TTS (METTS) model to mitigate these problems, realizing both
+      cross-speaker and cross-lingual emotion transfer. METTS takes DelightfulTTS as the backbone model and proposes the
+      following designs. First, to address the foreign accent problem, METTS introduces multi-scale emotion
+      modeling to disentangle speech prosody into coarse-grained and fine-grained scales, producing language-agnostic
+      and language-specific emotion representations, respectively. Second, as a pre-processing step, formant shift based
+      information perturbation is applied to the reference signal for better disentanglement of speaker timbre, language
+      and emotion. Third, a vector quantization based emotion matcher is designed for cross-lingual reference selection, leading
+      to decent emotion expressiveness in cross-lingual synthetic speech. Extensive experiments demonstrate the good
+      design of METTS.
+    </p>
+    <center><img src='fig/pipeline.drawio.png'></center>
+    <div align="center"><b>Fig.1</b> The architecture of METTS.</div>
+
+    <br><br>
+
+    <h2>2. Real recordings of target speaker<a name="transfer"></a>
+    </h2>
+   
+
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align: center"><strong>Speaker</strong></th>
+          <th style="text-align: center"><strong>Example1</strong></th>
+          <th style="text-align: center"><strong>Example2</strong></th>
+          <th style="text-align: center"><strong>Example3</strong></th>
+          <th style="text-align: center"><strong>Example4</strong></th>
+          <th style="text-align: center"><strong>Example5</strong></th>
+          <th style="text-align: center"><strong>Example6</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>CN_SPK</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_3.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_7.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>EN_SPK</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/supplement/000001.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/supplement/shannon_eng_raw_000010.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/supplement/shannon_eng_raw_000145.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/supplement/shannon_eng_raw_005052.wav" controls=""
+              preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/supplement/shannon_eng_raw_005302.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+
+
+      </tbody>
+    </table>
+
+    <br><br>
+
+    <h2>3. Synthetic speech for subjective and objective evaluations<a name="prediction"></a>
+    </h2>
+    <p><b>Target speaker: CN_SPK </b></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align: center"><strong>Emotion</strong></th>
+          <th style="text-align: center"><strong>Target speaker example</strong></th>
+          <th style="text-align: center"><strong>Target emotion example</strong></th>
+          <th style="text-align: center"><strong>METTS-REF (Proposed)</strong></th>
+          <th style="text-align: center"><strong>METTS-ID (Proposed)</strong></th>
+          <th style="text-align: center"><strong>GST-MLTTS</strong></th>
+          <th style="text-align: center"><strong>VAE-MLTTS</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Happy</td>
+          <td style="text-align: left" colspan=6>Text: 不久以后，王后果然生下了一个可爱的小公主。 (Not long after, the queen gave birth to a lovely little princess.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/gst/03_11.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/vae/03_11.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Sad</td>
+          <td style="text-align: left" colspan=6>Text: 天空布满乌云，阴风阵阵，就好像走到了阴曹地府。 (The sky is covered with dark clouds and a gust of wind, as if walking into the underworld.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/gst/03_3.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/vae/03_3.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Angry</td>
+          <td style="text-align: left" colspan=6>Text: 可恶的恶魔！你胡作非为，竟敢抓走公主！ (Damned demon! How dare you take the princess for fooling around!)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_7.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/gst/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/vae/03_7.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2> Surprise</td>
+          <td style="text-align: left" colspan=6>Text: 进入小木屋后，里面竟然整齐排列着七张小小的床！ (After entering the cabin, there were seven small beds neatly arranged in it!)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/gst/03_19.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/vae/03_19.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Fear</td>
+          <td style="text-align: left" colspan=6>Text: 听到猫头鹰叫声的白雪公主，越走越觉得森林好可怕。 (Snow White, who heard the cry of an owl, felt more and more terrible in the forest as she walked.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/gst/03_17.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/vae/03_17.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Natural</td>
+          <td style="text-align: left" colspan=6>Text: 公主瞬间喜欢上了勇士，他们从此过着幸福快乐的生活。 (The princess instantly fell in love with the warriors, and they lived happily ever after.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/gst/03_10.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/vae/03_10.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Happy</td>
+          <td style="text-align: left" colspan=6>Text: If you love golf, then you can publish things about golf.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/gst/1.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/vae/1.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Sad</td>
+          <td style="text-align: left" colspan=6>Text: Go to the bedroom and open the closet doors.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/gst/38.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/vae/38.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Angry</td>
+          <td style="text-align: left" colspan=6>Text: It filled me with hope and righteous indignation.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/gst/11.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/vae/11.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Surprise</td>
+          <td style="text-align: left" colspan=6>Text: There are thirty one people in the hall.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/gst/6.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/vae/6.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Fear</td>
+          <td style="text-align: left" colspan=6>Text: But for now and for numerous reasons, that is how things are.
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/gst/12.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/vae/12.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Natural</td>
+          <td style="text-align: left" colspan=6>Text: You just wanted to scream or cry, or punch something.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/gst/9.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/vae/9.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+   
+    <p><b>Target speaker: EN_SPK </b></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align: center"><strong>Emotion</strong></th>
+          <th style="text-align: center"><strong>Target speaker example</strong></th>
+          <th style="text-align: center"><strong>Target emotion example</strong></th>
+          <th style="text-align: center"><strong>METTS-REF (Proposed)</strong></th>
+          <th style="text-align: center"><strong>METTS-ID (Proposed)</strong></th>
+          <th style="text-align: center"><strong>GST-MLTTS</strong></th>
+          <th style="text-align: center"><strong>VAE-MLTTS</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Happy</td>
+          <td style="text-align: left" colspan=6>Text: 不久以后，王后果然生下了一个可爱的小公主。 (Not long after, the queen gave birth to a lovely little princess.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/gst/03_11.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/vae/03_11.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Sad</td>
+          <td style="text-align: left" colspan=6>Text: 天空布满乌云，阴风阵阵，就好像走到了阴曹地府。 (The sky is covered with dark clouds and a gust of wind, as if walking into the underworld.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/gst/03_3.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/vae/03_3.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Angry</td>
+          <td style="text-align: left" colspan=6>Text: 可恶的恶魔！你胡作非为，竟敢抓走公主！ (Damned demon! How dare you take the princess for fooling around!)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_7.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/gst/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/vae/03_7.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2> Surprise</td>
+          <td style="text-align: left" colspan=6>Text: 进入小木屋后，里面竟然整齐排列着七张小小的床！ (After entering the cabin, there were seven small beds neatly arranged in it!)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/gst/03_19.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/vae/03_19.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Fear</td>
+          <td style="text-align: left" colspan=6>Text: 听到猫头鹰叫声的白雪公主，越走越觉得森林好可怕。 (Snow White, who heard the cry of an owl, felt more and more terrible in the forest as she walked.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/gst/03_17.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/vae/03_17.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Natural</td>
+          <td style="text-align: left" colspan=6>Text: 公主瞬间喜欢上了勇士，他们从此过着幸福快乐的生活。 (The princess instantly fell in love with the warriors, and they lived happily ever after.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/gst/03_10.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/vae/03_10.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Happy</td>
+          <td style="text-align: left" colspan=6>Text: If you love golf, then you can publish things about golf.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/gst/1.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/vae/1.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Sad</td>
+          <td style="text-align: left" colspan=6>Text: Go to the bedroom and open the closet doors.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/gst/38.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/vae/38.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Angry</td>
+          <td style="text-align: left" colspan=6>Text: It filled me with hope and righteous indignation.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/gst/11.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/vae/11.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Surprise</td>
+          <td style="text-align: left" colspan=6>Text: There are thirty one people in the hall.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/gst/6.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/vae/6.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Fear</td>
+          <td style="text-align: left" colspan=6>Text: But for now and for numerous reasons, that is how things are.
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/gst/12.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/vae/12.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Natural</td>
+          <td style="text-align: left" colspan=6>Text: You just wanted to scream or cry, or punch something.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/gst/9.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/vae/9.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <br><br>
+    <!-- <p><b>Short summary:</b> The results indicate the effectiveness of our proposed method can successfully transfer the
+      source emotion to the target speaker while maintaining the target speaker's timbre.</p> -->
+
+    <h2>4. Synthetic speech for ablation studies<a name="control"></a>
+    </h2>
+    <!-- <h3>Convert the emotion and style expresssions from different source speakers to the target speakers without
+        emotional and stylistic training data.</h3> -->
+
+    <p><b>Target speaker: CN_SPK </b></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align: center"><strong>Emotion</strong></th>
+          <th style="text-align: center"><strong>Target speaker example</strong></th>
+          <th style="text-align: center"><strong>Target emotion example</strong></th>
+          <th style="text-align: center"><strong>METTS-REF (Proposed)</strong></th>
+          <th style="text-align: center"><strong>w/o GST</strong></th>
+          <th style="text-align: center"><strong>w/o VAE</strong></th>
+          <th style="text-align: center"><strong>w/o Information Perturbation</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Happy</td>
+          <td style="text-align: left" colspan=6>Text: 不久以后，王后果然生下了一个可爱的小公主。 (Not long after, the queen gave birth to a lovely little princess.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_gst/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_vae/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_fs/03_11.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Sad</td>
+          <td style="text-align: left" colspan=6>Text: 天空布满乌云，阴风阵阵，就好像走到了阴曹地府。 (The sky is covered with dark clouds and a gust of wind, as if walking into the underworld.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_gst/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_vae/03_3.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_fs/03_3.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Angry</td>
+          <td style="text-align: left" colspan=6>Text: 可恶的恶魔！你胡作非为，竟敢抓走公主！ (Damned demon! How dare you take the princess for fooling around!)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_7.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_gst/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_vae/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_fs/03_7.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2> Surprise</td>
+          <td style="text-align: left" colspan=6>Text: 进入小木屋后，里面竟然整齐排列着七张小小的床！ (After entering the cabin, there were seven small beds neatly arranged in it!)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_gst/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_vae/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_fs/03_19.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Fear</td>
+          <td style="text-align: left" colspan=6>Text: 听到猫头鹰叫声的白雪公主，越走越觉得森林好可怕。 (Snow White, who heard the cry of an owl, felt more and more terrible in the forest as she walked.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_gst/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_vae/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_fs/03_17.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Natural</td>
+          <td style="text-align: left" colspan=6>Text: 公主瞬间喜欢上了勇士，他们从此过着幸福快乐的生活。 (The princess instantly fell in love with the warriors, and they lived happily ever after.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_gst/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_vae/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_fs/03_10.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Happy</td>
+          <td style="text-align: left" colspan=6>Text: If you love golf, then you can publish things about golf.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_gst/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_vae/1.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_fs/1.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Sad</td>
+          <td style="text-align: left" colspan=6>Text: Go to the bedroom and open the closet doors.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_gst/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_vae/38.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_fs/38.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Angry</td>
+          <td style="text-align: left" colspan=6>Text: It filled me with hope and righteous indignation.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_gst/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_vae/11.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_fs/11.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Surprise</td>
+          <td style="text-align: left" colspan=6>Text: There are thirty one people in the hall.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_gst/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_vae/6.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_fs/6.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Fear</td>
+          <td style="text-align: left" colspan=6>Text: But for now and for numerous reasons, that is how things are.
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_gst/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_vae/12.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_fs/12.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Natural</td>
+          <td style="text-align: left" colspan=6>Text: You just wanted to scream or cry, or punch something.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_gst/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_vae/9.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0_ab/wo_fs/9.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <!-- <p><b>Short summary:</b> When the target neutral speaker is male, the FS2-GST and FS2-VAE cannot produce correct
+        timbre, although the genereted speech is emotional. Besides, FS2-BN sometimes also cannot generate male voice. The
+        proposed model could successfully maintain the target timbre when generating emotional speech.</p> -->
+
+    <p><b>Target speaker: EN_SPK </b></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align: center"><strong>Emotion</strong></th>
+          <th style="text-align: center"><strong>Target speaker example</strong></th>
+          <th style="text-align: center"><strong>Target emotion example</strong></th>
+          <th style="text-align: center"><strong>METTS-REF (Proposed)</strong></th>
+          <th style="text-align: center"><strong>w/o GST</strong></th>
+          <th style="text-align: center"><strong>w/o VAE</strong></th>
+          <th style="text-align: center"><strong>w/o Information Perturbation</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Happy</td>
+          <td style="text-align: left" colspan=6>Text: 不久以后，王后果然生下了一个可爱的小公主。 (Not long after, the queen gave birth to a lovely little princess.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_gst/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_vae/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_fs/03_11.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Sad</td>
+          <td style="text-align: left" colspan=6>Text: 天空布满乌云，阴风阵阵，就好像走到了阴曹地府。 (The sky is covered with dark clouds and a gust of wind, as if walking into the underworld.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_gst/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_vae/03_3.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_fs/03_3.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Angry</td>
+          <td style="text-align: left" colspan=6>Text: 可恶的恶魔！你胡作非为，竟敢抓走公主！ (Damned demon! How dare you take the princess for fooling around!)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_7.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_gst/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_vae/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_fs/03_7.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2> Surprise</td>
+          <td style="text-align: left" colspan=6>Text: 进入小木屋后，里面竟然整齐排列着七张小小的床！ (After entering the cabin, there were seven small beds neatly arranged in it!)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_gst/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_vae/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_fs/03_19.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Fear</td>
+          <td style="text-align: left" colspan=6>Text: 听到猫头鹰叫声的白雪公主，越走越觉得森林好可怕。 (Snow White, who heard the cry of an owl, felt more and more terrible in the forest as she walked.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_gst/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_vae/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_fs/03_17.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Natural</td>
+          <td style="text-align: left" colspan=6>Text: 公主瞬间喜欢上了勇士，他们从此过着幸福快乐的生活。 (The princess instantly fell in love with the warriors, and they lived happily ever after.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_gst/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_vae/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_fs/03_10.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Happy</td>
+          <td style="text-align: left" colspan=6>Text: If you love golf, then you can publish things about golf.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_gst/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_vae/1.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_fs/1.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Sad</td>
+          <td style="text-align: left" colspan=6>Text: Go to the bedroom and open the closet doors.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_gst/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_vae/38.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_fs/38.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Angry</td>
+          <td style="text-align: left" colspan=6>Text: It filled me with hope and righteous indignation.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_gst/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_vae/11.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_fs/11.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Surprise</td>
+          <td style="text-align: left" colspan=6>Text: There are thirty one people in the hall.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_gst/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_vae/6.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_fs/6.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Fear</td>
+          <td style="text-align: left" colspan=6>Text: But for now and for numerous reasons, that is how things are.
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_gst/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_vae/12.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_fs/12.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Natural</td>
+          <td style="text-align: left" colspan=6>Text: You just wanted to scream or cry, or punch something.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_gst/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_vae/9.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5_ab/wo_fs/9.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+
+    <br><br>
+    <h2>5. Synthetic speech for different numbers of quantization centers<a name="control2"></a></h2>
+
+    <p><b>Target speaker: CN_SPK </b></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align: center"><strong>Emotion</strong></th>
+          <th style="text-align: center"><strong>Target speaker example</strong></th>
+          <th style="text-align: center"><strong>Target emotion example</strong></th>
+          <th style="text-align: center"><strong>N = 32</strong></th>
+          <th style="text-align: center"><strong>N = 64</strong></th>
+          <th style="text-align: center"><strong>N = 96</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Happy</td>
+          <td style="text-align: left" colspan=6>Text: 不久以后，王后果然生下了一个可爱的小公主。 (Not long after, the queen gave birth to a lovely little princess.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-32/03_11.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-96/03_11.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Sad</td>
+          <td style="text-align: left" colspan=6>Text: 天空布满乌云，阴风阵阵，就好像走到了阴曹地府。 (The sky is covered with dark clouds and a gust of wind, as if walking into the underworld.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-32/03_3.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-96/03_3.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Angry</td>
+          <td style="text-align: left" colspan=6>Text: 可恶的恶魔！你胡作非为，竟敢抓走公主！ (Damned demon! How dare you take the princess for fooling around!)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_7.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-32/03_7.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-96/03_7.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2> Surprise</td>
+          <td style="text-align: left" colspan=6>Text: 进入小木屋后，里面竟然整齐排列着七张小小的床！ (After entering the cabin, there were seven small beds neatly arranged in it!)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-32/03_19.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-96/03_19.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Fear</td>
+          <td style="text-align: left" colspan=6>Text: 听到猫头鹰叫声的白雪公主，越走越觉得森林好可怕。 (Snow White, who heard the cry of an owl, felt more and more terrible in the forest as she walked.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-32/03_17.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-96/03_17.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Natural</td>
+          <td style="text-align: left" colspan=6>Text: 公主瞬间喜欢上了勇士，他们从此过着幸福快乐的生活。 (The princess instantly fell in love with the warriors, and they lived happily ever after.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-32/03_10.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-96/03_10.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Happy</td>
+          <td style="text-align: left" colspan=6>Text: If you love golf, then you can publish things about golf.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-32/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-96/1.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Sad</td>
+          <td style="text-align: left" colspan=6>Text: Go to the bedroom and open the closet doors.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-32/38.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-96/38.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Angry</td>
+          <td style="text-align: left" colspan=6>Text: It filled me with hope and righteous indignation.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-32/11.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-96/11.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Surprise</td>
+          <td style="text-align: left" colspan=6>Text: There are thirty one people in the hall.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-32/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-96/6.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Fear</td>
+          <td style="text-align: left" colspan=6>Text: But for now and for numerous reasons, that is how things are.
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-32/12.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-96/12.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Natural</td>
+          <td style="text-align: left" colspan=6>Text: You just wanted to scream or cry, or punch something.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk0/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-32/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0/proposed-id/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/0_ab/proposed-id-96/9.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <p><b>Target speaker: EN_SPK </b></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align: center"><strong>Emotion</strong></th>
+          <th style="text-align: center"><strong>Target speaker example</strong></th>
+          <th style="text-align: center"><strong>Target emotion example</strong></th>
+          <th style="text-align: center"><strong>N = 32</strong></th>
+          <th style="text-align: center"><strong>N = 64</strong></th>
+          <th style="text-align: center"><strong>N = 96</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Happy</td>
+          <td style="text-align: left" colspan=6>Text: 不久以后，王后果然生下了一个可爱的小公主。 (Not long after, the queen gave birth to a lovely little princess.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-32/03_11.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/03_11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-96/03_11.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Sad</td>
+          <td style="text-align: left" colspan=6>Text: 天空布满乌云，阴风阵阵，就好像走到了阴曹地府。 (The sky is covered with dark clouds and a gust of wind, as if walking into the underworld.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-32/03_3.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/03_3.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-96/03_3.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Angry</td>
+          <td style="text-align: left" colspan=6>Text: 可恶的恶魔！你胡作非为，竟敢抓走公主！ (Damned demon! How dare you take the princess for fooling around!)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_7.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-32/03_7.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/03_7.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-96/03_7.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2> Surprise</td>
+          <td style="text-align: left" colspan=6>Text: 进入小木屋后，里面竟然整齐排列着七张小小的床！ (After entering the cabin, there were seven small beds neatly arranged in it!)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-32/03_19.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/03_19.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-96/03_19.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Fear</td>
+          <td style="text-align: left" colspan=6>Text: 听到猫头鹰叫声的白雪公主，越走越觉得森林好可怕。 (Snow White, who heard the cry of an owl, felt more and more terrible in the forest as she walked.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-32/03_17.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/03_17.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-96/03_17.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Natural</td>
+          <td style="text-align: left" colspan=6>Text: 公主瞬间喜欢上了勇士，他们从此过着幸福快乐的生活。 (The princess instantly fell in love with the warriors, and they lived happily ever after.)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-32/03_10.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-96/03_10.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Happy</td>
+          <td style="text-align: left" colspan=6>Text: If you love golf, then you can publish things about golf.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-32/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/1.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-96/1.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Sad</td>
+          <td style="text-align: left" colspan=6>Text: Go to the bedroom and open the closet doors.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-32/38.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/38.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-96/38.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Angry</td>
+          <td style="text-align: left" colspan=6>Text: It filled me with hope and righteous indignation.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-32/11.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/11.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-96/11.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Surprise</td>
+          <td style="text-align: left" colspan=6>Text: There are thirty one people in the hall.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-32/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/6.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-96/6.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Fear</td>
+          <td style="text-align: left" colspan=6>Text: But for now and for numerous reasons, that is how things are.
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-32/12.wav" controls=""
+              preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/12.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-96/12.wav" controls=""
+              preload=""></audio>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="text-align: center; word-break: keep-all; white-space: nowrap;" rowspan=2>Natural</td>
+          <td style="text-align: left" colspan=6>Text: You just wanted to scream or cry, or punch something.</td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio src="subjective/ref_spk5/03_10.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/ref_emo/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-32/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5/proposed-id/9.wav" controls="" preload=""></audio>
+          </td>
+          <td style="text-align: left"><audio src="subjective/5_ab/proposed-id-96/9.wav" controls="" preload=""></audio>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+
+
+    <footer class="site-footer">
+
+      <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com/">GitHub
+          Pages</a>.</span>
+    </footer>
+  </section>
+</body>
+
+</html>
