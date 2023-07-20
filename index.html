@@ -65,10 +65,92 @@
     </ul>
    
 
-    <table>
-      <tbody id="tbody">
-      </tbody>
-    </table> 
+    <style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th style="text-align: center"></th>
+    <th style="text-align: center; width: 150px;">Speaker Sample</th>
+    <th style="text-align: center; width: 150px;">Reference sample</th>
+    <th style="text-align: center; width: 150px;">M3</th>
+    <th style="text-align: center; width: 150px;">SCLN-GST</th>
+    <th style="text-align: center; width: 150px;">Proposed</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td style="text-align: center; width: 150px;" rowspan="5">Target Speaker CN</td>
+    <td style="text-align: center; width: 150px;" rowspan="5"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+  </tr>
+  <tr>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+  </tr>
+  <tr>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></audio></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+  </tr>
+  <tr>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+  </tr>
+  <tr>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+  </tr>
+  <tr>
+    <td style="text-align: center; width: 150px;" rowspan="5">speaker TH</td>
+    <td style="text-align: center; width: 150px;" rowspan="5"></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+    <td style="text-align: center; width: 150px;"><audio style="width: 150px;" controls="" src="raw/samples/1.wav"></td>
+  </tr>
+  <tr>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+  </tr>
+  <tr>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+  </tr>
+  <tr>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+  </tr>
+  <tr>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+    <td style="text-align: center; width: 150px;"></td>
+  </tr>
+</tbody>
+</table>
 
     <footer class="site-footer">
 
@@ -79,66 +161,3 @@
 </body>
 
 </html>
-
-<script type="" text/javascript>
-  window.onload = function () {
-    let scenes = ["Clean", "Noisy"]
-    let speakers = ["fe-CN", "ma-TH"]
-    let genders = ["female", "male", "aishell female", "aishell male"]
-    let models = ["Bottomline", "Baseline", "Topline", "DualVC-nonstreaming", "DualVC-streaming"]
-    let all_samples = [["1.wav", "4.wav", "biaobei_8315010.wav", "TenXiaozhi_007_000472.wav"], 
-                    ["Y0000019527_oMwYDEEBw0g_S00489.wav", "Y0000019576_oVD68qz-Rrw_S00095.wav", "Y0000019686_omXo90yMpGc_S00895.wav", "Y0000019687_omf0WUsolCc_S00328.wav"]]
-    let sample_data = `
-        <tr>
-          <td style="text-align: center; width: 150px;" rowspan=2><strong>Scenario<strong></td>
-          <td style="text-align: center; width: 150px;" rowspan=2><strong>Target Speaker<strong></td>
-          <td style="text-align: center; width: 150px;" rowspan=2><strong>Source speech<strong></td>
-          <td style="text-align: center; width: 150px;" colspan=5><strong>Method<strong></td>
-        </tr>
-        <tr>
-        `
-    for (const id in models) {
-      model = models[id]
-      if (model == 'Baseline') {
-        model = 'IBF-VC'
-      }
-      sample_data += '<td style="text-align: center; width: 150px;" rowspan=1><strong>' + model + '<strong></td>'
-    }
-    sample_data += "</tr>"
-    console.log(sample_data)
-    
-    for (let x in scenes) {
-      let scene = scenes[x]
-      let scene_data = ""
-      scene_data += '<tr>'
-      scene_data += '<td style="text-align: center; width: 150px;" rowspan=' + 8 + '><strong>' + scene + ' Source' + '<strong></td>'
-      let samples = all_samples[x]
-      console.log(scene, samples)
-      for (let y in speakers) {
-        speaker = speakers[y]
-        gender = genders[y]
-        scene_data += '<td style="text-align: center; width: 150px;" rowspan=4>' + gender + '<audio style="width: 150px;"controls="" src="raw/samples/speakers/' + speaker + '.wav"></td>'
-        for (let z in samples) {
-          if (z != 0) {
-            scene_data += '<tr>'
-          }
-          let sample = samples[z]
-          scene_data += '<td style="text-align: center"><audio style="width: 150px;" controls="" src="raw/samples/' + scene + '/source/' + sample + '"></audio></td>'
-          for (let w in models) {
-            let model = models[w]
-            console.log(speaker + model)
-            if ((speaker == "SSB1956" || speaker == "SSB0273") && (model != "DualVC-streaming" && model != "DualVC-nonstreaming")) {
-              console.log("!!!")
-              scene_data += '<td style="text-align: center"><p>N/A</p></td>'
-            } else {
-              scene_data += '<td style="text-align: center"><audio style="width: 150px;" controls="" src="raw/samples/' + scene + '/' + model + '/' + speaker + '/' + sample + '"></audio></td>'
-            }
-          }
-          scene_data += '</tr>'
-        }
-      }
-      sample_data += scene_data
-    }
-    document.getElementById('tbody').innerHTML = sample_data
-  }
-</script>
